@@ -1,95 +1,83 @@
-// Описан в документации
 import flatpickr from 'flatpickr';
-// Дополнительный импорт стилей
-import 'flatpickr/dist/flatpickr.min.css';
-// импор библиотеки уведомлений
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import 'flatpickr/dist/flatpickr.min.css';
 
-// инициализация узлов
-const dataTimeInputEl = document.querySelector('#datetime-picker');
-const dataStartBtnEl = document.querySelector('[data-start]');
-const daysEl = document.querySelector('[data-days]');
-const hoursEl = document.querySelector('[data-hours]');
-const minutesEl = document.querySelector('[data-minutes]');
-const secondsEl = document.querySelector('[data-seconds]');
+const datetimePicker = document.querySelector('#datetime-picker');
+const btnStart = document.querySelector('[data-start]');
+const timerDays = document.querySelector('[data-days]');
+const timerHours = document.querySelector('[data-hours]');
+const timerMinutes = document.querySelector('[data-minutes]');
+const timerSeconds = document.querySelector('[data-seconds]');
 
-// переменная для записи выбранной даты в миллисекундах
-let finishTimeCount = 0;
-// записываем отсчитываемое время
-let countDown = null;
-// записываем разницу между текущим и отсчитываем (наши показания секундомера)
-let difference = 0;
+let selectedTime = 0;
+btnStart.disabled = true;
+Notiflix.Notify.init({
+    position: 'center-top',
+  });
 
-updateCountValue();
+  const options = {
+    enableTime: true,
+    time_24hr: true,
+    defaultDate: new Date(),
+    minuteIncrement: 1,
+    onClose(selectedDates) {
+      if (Date.now() > selectedDates[0]) {
+        return Notiflix.Notify.warning('Please choose a date in the future');
+      }
+      btnStart.disabled = false;
+      selectedTime = new Date(selectedDates[0]).getTime();
+    },
+};
 
-flatpickr(dataTimeInputEl, {
-  enableTime: true,
-  time_24hr: true,
-  defaultDate: new Date(),
-  minuteIncrement: 1,
-  onClose(selectedDates) {
-    console.log(selectedDates[0]);
-    //   приводим выбранную дату в миллисекунды и записываем в переменную
-    finishTimeCount = selectedDates[0].getTime();
+flatpickr(datetimePicker, options);
 
-    dataStartBtnEl.disabled = false;
-    //   если выбраная дата уже прошла, то кнопка старт не активна, выводим предупреждение
-    if (finishTimeCount < Date.now()) {
-      dataStartBtnEl.setAttribute('disabled', true);
-      Notify.failure('Please choose a date in the future');
+const itsaFinalCountDown = () => {
+    btnStart.disabled = true;
+    datetimePicker.disabled = true;
+
+    const timerId = setInterval(() => {
+        const timeToShow = selectedTime - Date.now();
+ 
+
+if (timeToShow <= 0) {
+      btnStart.disabled = false;
+      datetimePicker.disabled = false;
+      clearInterval(timerId);
+      return Notiflix.Notify.info('Time is over!');
     }
-  },
-});
+    timeToDisplay(convertMs(timeToShow));
+  }, 1000);
+}; 
 
-// добавляем слушателя на кнопку старт и запускаем функцию отсчета
-dataStartBtnEl.addEventListener('click', onStartCouter);
-
-// для запуска и записи отсчитываемого времени
-function onStartCouter() {
-  countDown = setInterval(updateCountValue, 1000);
-  dataStartBtnEl.setAttribute('disabled', true);
-  Notify.success('The countdown has begun!');
-}
-
-// рассчитываем разницу во времени и выводим на странцу
-function updateCountValue() {
-  const nowTime = new Date().getTime();
-  difference = finishTimeCount - nowTime;
-
-  if (difference < 0) {
-    dataStartBtnEl.setAttribute('disabled', true);
-    clearInterval(countDown);
-    return;
-  }
-  const { days, hours, minutes, seconds } = convertMs(difference);
-
-  daysEl.textContent = addLeadingZero(days);
-  hoursEl.textContent = addLeadingZero(hours);
-  minutesEl.textContent = addLeadingZero(minutes);
-  secondsEl.textContent = addLeadingZero(seconds);
-}
-
-// функция конвертации даты
-function convertMs(ms) {
-  // Number of milliseconds per unit of time
-  const second = 1000;
-  const minute = second * 60;
-  const hour = minute * 60;
-  const day = hour * 24;
-
-  // Remaining days
-  const days = Math.floor(ms / day);
-  // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
-  // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
-  // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
-
-  return { days, hours, minutes, seconds };
-}
-
-//Принимает число, приводит к строке и добавляет в начало 0 если число меньше 2-х знаков
 function addLeadingZero(value) {
-  return String(value).padStart(2, '0');
-}
+    return String(value).padStart(2, '0');
+  }
+
+  function convertMs(ms) {
+    // Number of milliseconds per unit of time
+    const second = 1000;
+    const minute = second * 60;
+    const hour = minute * 60;
+    const day = hour * 24;
+  
+    // Remaining days
+    const days = addLeadingZero(Math.floor(ms / day));
+    // Remaining hours
+    const hours = addLeadingZero(Math.floor((ms % day) / hour));
+    // Remaining minutes
+    const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
+    // Remaining seconds
+    const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
+  
+    return { days, hours, minutes, seconds };
+  }
+
+  function timeToDisplay({ days, hours, minutes, seconds }) {
+    timerDays.textContent = days;
+    timerHours.textContent = hours;
+    timerMinutes.textContent = minutes;
+    timerSeconds.textContent = seconds;
+
+  }
+
+  btnStart.addEventListener('click', itsaFinalCountDown);
