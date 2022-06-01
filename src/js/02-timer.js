@@ -81,3 +81,4 @@ function addLeadingZero(value) {
   }
 
   btnStart.addEventListener('click', itsaFinalCountDown);
+  
