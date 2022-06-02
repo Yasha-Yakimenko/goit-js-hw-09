@@ -22,11 +22,9 @@ flatpickr(dataTimeInputEl, {
   minuteIncrement: 1,
   onClose(selectedDates) {
     console.log(selectedDates[0]);
-    //   приводим выбранную дату в миллисекунды и записываем в переменную
     finishTimeCount = selectedDates[0].getTime();
 
     dataStartBtnEl.disabled = false;
-    //   если выбраная дата уже прошла, то кнопка старт не активна, выводим предупреждение
     if (finishTimeCount < Date.now()) {
       dataStartBtnEl.setAttribute('disabled', true);
       Notify.failure('Please choose a date in the future');
