@@ -11,7 +11,7 @@ const timerSeconds = document.querySelector('[data-seconds]');
 
 let selectedTime = 0;
 btnStart.disabled = true;
-Notiflix.Notify.init({
+Notify.init({
     position: 'center-top',
   });
 
