@@ -44,7 +44,7 @@ if (timeToShow <= 0) {
       btnStart.disabled = false;
       datetimePicker.disabled = false;
       clearInterval(timerId);
-      Notify.info('Time is over!');
+      Notify.success('Time is over!');
       return 
     }
     timeToDisplay(convertMs(timeToShow));
