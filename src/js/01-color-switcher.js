@@ -1,7 +1,6 @@
 const startBtn = document.querySelector('[data-start]');
 const stopBtn = document.querySelector('[data-stop]');
 const bodyElem = document.querySelector('body');
-let timerId = null;
 stopBtn.disabled = true;
 
 startBtn.addEventListener('click', () => {
@@ -12,8 +11,8 @@ startBtn.addEventListener('click', () => {
 
 stopBtn.addEventListener('click', () => {
     clearInterval(timerId);
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
 });
  
 function colorSwitcher() {
