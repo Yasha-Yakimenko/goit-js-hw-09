@@ -22,7 +22,8 @@ Notify.init({
     minuteIncrement: 1,
     onClose(selectedDates) {
       if (Date.now() > selectedDates[0]) {
-        return Notiflix.Notify.warning('Please choose a date in the future');
+      Notify.failure('Please choose a date in the future');
+      return
       }
       btnStart.disabled = false;
       selectedTime = new Date(selectedDates[0]).getTime();
