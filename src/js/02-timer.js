@@ -44,7 +44,8 @@ if (timeToShow <= 0) {
       btnStart.disabled = false;
       datetimePicker.disabled = false;
       clearInterval(timerId);
-      return Notiflix.Notify.info('Time is over!');
+      Notify.info('Time is over!');
+      return 
     }
     timeToDisplay(convertMs(timeToShow));
   }, 1000);
